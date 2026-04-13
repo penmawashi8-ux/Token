@@ -95,46 +95,6 @@
       text-decoration: none;
     }
     .hint a:hover { text-decoration: underline; }
-
-    .section-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #ccc;
-      margin-bottom: 10px;
-    }
-    .scopes-grid {
-      display: grid;
-      gap: 8px;
-    }
-    .scope-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 12px;
-      background: #111;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    .scope-item:hover { border-color: #444; }
-    .scope-item input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      margin-top: 1px;
-      accent-color: #ff0000;
-      flex-shrink: 0;
-    }
-    .scope-info .scope-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #eee;
-    }
-    .scope-info .scope-desc {
-      font-size: 12px;
-      color: #777;
-      margin-top: 2px;
-    }
     .btn {
       width: 100%;
       padding: 12px;
@@ -149,11 +109,6 @@
       margin-top: 8px;
     }
     .btn:hover { background: #cc0000; }
-    .divider {
-      border: none;
-      border-top: 1px solid #2a2a2a;
-      margin: 28px 0;
-    }
     .guide {
       margin-top: 32px;
     }
@@ -272,49 +227,6 @@
             placeholder="GOCSPX-xxxxxxxxxxxxxxxxxxxx"
             required
           >
-        </div>
-
-        <hr class="divider">
-
-        <div class="form-group">
-          <div class="section-label">スコープを選択</div>
-          <div class="scopes-grid">
-            <label class="scope-item">
-              <input type="checkbox" name="scopes" value="https://www.googleapis.com/auth/youtube" checked>
-              <div class="scope-info">
-                <div class="scope-name">youtube</div>
-                <div class="scope-desc">YouTube アカウントの管理（フル権限）</div>
-              </div>
-            </label>
-            <label class="scope-item">
-              <input type="checkbox" name="scopes" value="https://www.googleapis.com/auth/youtube.readonly">
-              <div class="scope-info">
-                <div class="scope-name">youtube.readonly</div>
-                <div class="scope-desc">YouTube アカウントの読み取り専用アクセス</div>
-              </div>
-            </label>
-            <label class="scope-item">
-              <input type="checkbox" name="scopes" value="https://www.googleapis.com/auth/youtube.force-ssl">
-              <div class="scope-info">
-                <div class="scope-name">youtube.force-ssl</div>
-                <div class="scope-desc">SSL 経由での YouTube データへのアクセス</div>
-              </div>
-            </label>
-            <label class="scope-item">
-              <input type="checkbox" name="scopes" value="https://www.googleapis.com/auth/youtube.upload">
-              <div class="scope-info">
-                <div class="scope-name">youtube.upload</div>
-                <div class="scope-desc">YouTube 動画のアップロード</div>
-              </div>
-            </label>
-            <label class="scope-item">
-              <input type="checkbox" name="scopes" value="https://www.googleapis.com/auth/youtubepartner">
-              <div class="scope-info">
-                <div class="scope-name">youtubepartner</div>
-                <div class="scope-desc">YouTube コンテンツパートナー機能へのアクセス</div>
-              </div>
-            </label>
-          </div>
         </div>
 
         <button type="submit" class="btn">Google でサインインしてトークンを生成</button>
