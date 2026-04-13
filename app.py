@@ -1,5 +1,4 @@
 import os
-import json
 import secrets
 import requests
 from urllib.parse import urlencode
@@ -11,12 +10,7 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY", secrets.token_hex(32))
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 
-YOUTUBE_SCOPES = [
-    "https://www.googleapis.com/auth/youtube",
-    "https://www.googleapis.com/auth/youtube.force-ssl",
-    "https://www.googleapis.com/auth/youtube.readonly",
-    "https://www.googleapis.com/auth/youtubepartner",
-]
+YOUTUBE_SCOPE = "https://www.googleapis.com/auth/youtube"
 
 
 @app.route("/")
@@ -28,12 +22,9 @@ def index():
 def start_auth():
     client_id = request.form.get("client_id", "").strip()
     client_secret = request.form.get("client_secret", "").strip()
-    scope_selection = request.form.getlist("scopes")
 
     if not client_id or not client_secret:
         return render_template("index.html", error="クライアントIDとシークレットを入力してください。")
-
-    scopes = scope_selection if scope_selection else [YOUTUBE_SCOPES[0]]
 
     session["client_id"] = client_id
     session["client_secret"] = client_secret
@@ -45,7 +36,7 @@ def start_auth():
         "client_id": client_id,
         "redirect_uri": redirect_uri,
         "response_type": "code",
-        "scope": " ".join(scopes),
+        "scope": YOUTUBE_SCOPE,
         "access_type": "offline",
         "prompt": "consent",
         "state": session["state"],

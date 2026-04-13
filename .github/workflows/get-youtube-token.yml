@@ -11,11 +11,6 @@ on:
         description: "OAuth クライアント シークレット（空の場合は YOUTUBE_CLIENT_SECRET シークレットを使用）"
         required: false
         type: string
-      scopes:
-        description: "スコープ（スペース区切り）"
-        required: false
-        default: "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.force-ssl"
-        type: string
 
 jobs:
   generate-token:
@@ -44,9 +39,7 @@ jobs:
           # inputs が空の場合は Secrets にフォールバック
           YOUTUBE_CLIENT_ID: ${{ inputs.client_id || secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ inputs.client_secret || secrets.YOUTUBE_CLIENT_SECRET }}
-        run: |
-          python get_token.py \
-            --scopes ${{ inputs.scopes || 'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.force-ssl' }}
+        run: python get_token.py
 
       - name: 取得結果を表示
         if: success()

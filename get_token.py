@@ -20,18 +20,13 @@ DEVICE_CODE_URL = "https://oauth2.googleapis.com/device/code"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code"
 
-SCOPES = [
-    "https://www.googleapis.com/auth/youtube",
-    "https://www.googleapis.com/auth/youtube.force-ssl",
-    "https://www.googleapis.com/auth/youtube.readonly",
-    "https://www.googleapis.com/auth/youtube.upload",
-]
+SCOPE = "https://www.googleapis.com/auth/youtube"
 
 
-def get_device_code(client_id: str, scopes: list[str]) -> dict:
+def get_device_code(client_id: str) -> dict:
     resp = requests.post(
         DEVICE_CODE_URL,
-        data={"client_id": client_id, "scope": " ".join(scopes)},
+        data={"client_id": client_id, "scope": SCOPE},
         timeout=30,
     )
     resp.raise_for_status()
@@ -82,12 +77,6 @@ def main():
     parser = argparse.ArgumentParser(description="YouTube OAuth リフレッシュトークン取得")
     parser.add_argument("--client-id", default=os.environ.get("YOUTUBE_CLIENT_ID"), help="OAuth クライアント ID")
     parser.add_argument("--client-secret", default=os.environ.get("YOUTUBE_CLIENT_SECRET"), help="OAuth クライアント シークレット")
-    parser.add_argument(
-        "--scopes",
-        nargs="+",
-        default=SCOPES,
-        help="OAuth スコープ（スペース区切り）",
-    )
     args = parser.parse_args()
 
     if not args.client_id:
@@ -96,7 +85,7 @@ def main():
         parser.error("--client-secret または環境変数 YOUTUBE_CLIENT_SECRET が必要です")
 
     print("[1/3] デバイスコードを取得中...")
-    device_data = get_device_code(args.client_id, args.scopes)
+    device_data = get_device_code(args.client_id)
 
     user_code = device_data["user_code"]
     verification_url = device_data["verification_url"]
