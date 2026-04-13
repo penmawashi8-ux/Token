@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube OAuth Token Generator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #f1f1f1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .container {
+      width: 100%;
+      max-width: 640px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .header .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .header .logo svg {
+      width: 40px;
+      height: 40px;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .header p {
+      font-size: 14px;
+      color: #aaa;
+      margin-top: 6px;
+    }
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 32px;
+    }
+    .error-banner {
+      background: #3a1a1a;
+      border: 1px solid #ff4444;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #ff6666;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ccc;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px 14px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #f1f1f1;
+      font-size: 14px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    input[type="text"]:focus, input[type="password"]:focus {
+      border-color: #ff0000;
+    }
+    .hint {
+      font-size: 12px;
+      color: #666;
+      margin-top: 6px;
+    }
+    .hint a {
+      color: #ff4444;
+      text-decoration: none;
+    }
+    .hint a:hover { text-decoration: underline; }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ccc;
+      margin-bottom: 10px;
+    }
+    .scopes-grid {
+      display: grid;
+      gap: 8px;
+    }
+    .scope-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .scope-item:hover { border-color: #444; }
+    .scope-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin-top: 1px;
+      accent-color: #ff0000;
+      flex-shrink: 0;
+    }
+    .scope-info .scope-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #eee;
+    }
+    .scope-info .scope-desc {
+      font-size: 12px;
+      color: #777;
+      margin-top: 2px;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #ff0000;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+    .btn:hover { background: #cc0000; }
+    .divider {
+      border: none;
+      border-top: 1px solid #2a2a2a;
+      margin: 28px 0;
+    }
+    .guide {
+      margin-top: 32px;
+    }
+    .guide h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #eee;
+      margin-bottom: 16px;
+    }
+    .steps {
+      display: grid;
+      gap: 12px;
+    }
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 26px;
+      height: 26px;
+      background: #ff0000;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step-text {
+      font-size: 13px;
+      color: #bbb;
+      line-height: 1.6;
+      padding-top: 3px;
+    }
+    .step-text a {
+      color: #ff4444;
+      text-decoration: none;
+    }
+    .step-text a:hover { text-decoration: underline; }
+    .step-text code {
+      background: #222;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 12px;
+      color: #ff9999;
+    }
+    .redirect-note {
+      background: #1a1a2e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #aaa;
+    }
+    .redirect-note strong {
+      color: #eee;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .redirect-note code {
+      background: #111;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 12px;
+      color: #7ec8e3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <svg viewBox="0 0 90 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="90" height="20" rx="4" fill="#FF0000"/>
+          <polygon points="34,4 34,16 46,10" fill="white"/>
+        </svg>
+        <span style="font-size:20px; font-weight:700; color:#fff;">YouTube</span>
+      </div>
+      <h1>OAuth Token Generator</h1>
+      <p>クライアントIDとシークレットを入力してリフレッシュトークンを取得します</p>
+    </div>
+
+    <div class="card">
+      {% if error %}
+      <div class="error-banner">{{ error }}</div>
+      {% endif %}
+
+      <form action="/auth" method="POST">
+        <div class="form-group">
+          <label for="client_id">クライアント ID</label>
+          <input
+            type="text"
+            id="client_id"
+            name="client_id"
+            placeholder="123456789-xxxxxxxxxx.apps.googleusercontent.com"
+            required
+          >
+          <p class="hint">
+            <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">
+              Google Cloud Console
+            </a> から取得してください
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="client_secret">クライアント シークレット</label>
+          <input
+            type="password"
+            id="client_secret"
+            name="client_secret"
+            placeholder="GOCSPX-xxxxxxxxxxxxxxxxxxxx"
+            required
+          >
+        </div>
+
+        <hr class="divider">
+
+        <div class="form-group">
+          <div class="section-label">スコープを選択</div>
+          <div class="scopes-grid">
+            <label class="scope-item">
+              <input type="checkbox" name="scopes" value="https://www.googleapis.com/auth/youtube" checked>
+              <div class="scope-info">
+                <div class="scope-name">youtube</div>
+                <div class="scope-desc">YouTube アカウントの管理（フル権限）</div>
+              </div>
+            </label>
+            <label class="scope-item">
+              <input type="checkbox" name="scopes" value="https://www.googleapis.com/auth/youtube.readonly">
+              <div class="scope-info">
+                <div class="scope-name">youtube.readonly</div>
+                <div class="scope-desc">YouTube アカウントの読み取り専用アクセス</div>
+              </div>
+            </label>
+            <label class="scope-item">
+              <input type="checkbox" name="scopes" value="https://www.googleapis.com/auth/youtube.force-ssl">
+              <div class="scope-info">
+                <div class="scope-name">youtube.force-ssl</div>
+                <div class="scope-desc">SSL 経由での YouTube データへのアクセス</div>
+              </div>
+            </label>
+            <label class="scope-item">
+              <input type="checkbox" name="scopes" value="https://www.googleapis.com/auth/youtube.upload">
+              <div class="scope-info">
+                <div class="scope-name">youtube.upload</div>
+                <div class="scope-desc">YouTube 動画のアップロード</div>
+              </div>
+            </label>
+            <label class="scope-item">
+              <input type="checkbox" name="scopes" value="https://www.googleapis.com/auth/youtubepartner">
+              <div class="scope-info">
+                <div class="scope-name">youtubepartner</div>
+                <div class="scope-desc">YouTube コンテンツパートナー機能へのアクセス</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn">Google でサインインしてトークンを生成</button>
+      </form>
+    </div>
+
+    <div class="guide">
+      <h2>クレデンシャルの作成手順</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a>
+            でプロジェクトを作成または選択
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            「APIとサービス」→「ライブラリ」で
+            <strong style="color:#eee;">YouTube Data API v3</strong>
+            を検索して有効化
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            「APIとサービス」→「OAuth 同意画面」でアプリを設定
+            （テスト用は<code>外部</code>を選択）
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">
+            「認証情報」→「認証情報を作成」→「OAuth クライアント ID」
+            でアプリの種類に<code>ウェブアプリケーション</code>を選択
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-text">
+            承認済みのリダイレクト URI に以下を追加してクライアントIDとシークレットを取得
+          </div>
+        </div>
+      </div>
+
+      <div class="redirect-note">
+        <strong>リダイレクト URI（コピーして貼り付けてください）</strong>
+        <code id="redirect-uri">http://localhost:5000/callback</code>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

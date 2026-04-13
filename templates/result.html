@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>トークン取得完了 - YouTube OAuth Token Generator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #f1f1f1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .container {
+      width: 100%;
+      max-width: 680px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: #1a3a1a;
+      border: 2px solid #22c55e;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .success-icon svg {
+      width: 28px;
+      height: 28px;
+      color: #22c55e;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .header p {
+      font-size: 14px;
+      color: #888;
+      margin-top: 6px;
+    }
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .token-section {
+      margin-bottom: 24px;
+    }
+    .token-section:last-child { margin-bottom: 0; }
+    .token-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    .token-box {
+      position: relative;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 14px 50px 14px 14px;
+    }
+    .token-box.highlight {
+      border-color: #22c55e40;
+      background: #0d1a0d;
+    }
+    .token-value {
+      font-family: "SF Mono", "Fira Code", Menlo, monospace;
+      font-size: 13px;
+      color: #22c55e;
+      word-break: break-all;
+      line-height: 1.5;
+    }
+    .token-box.dim .token-value {
+      color: #666;
+      font-size: 12px;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      color: #aaa;
+      font-size: 11px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .copy-btn:hover {
+      background: #3a3a3a;
+      color: #fff;
+    }
+    .copy-btn.copied {
+      background: #1a3a1a;
+      border-color: #22c55e;
+      color: #22c55e;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #2a2a2a;
+      margin: 20px 0;
+    }
+    .scope-tag {
+      display: inline-block;
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      color: #7ec8e3;
+      font-family: "SF Mono", "Fira Code", monospace;
+      margin: 3px 3px 0 0;
+    }
+    .back-btn {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #ccc;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      background: #2a2a2a;
+      color: #fff;
+    }
+    .warning {
+      background: #2a1a00;
+      border: 1px solid #ff9900;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #ffb347;
+      margin-bottom: 20px;
+    }
+    .warning strong { color: #ffcc66; }
+    .json-block {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 14px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 12px;
+      color: #7ec8e3;
+      white-space: pre;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h1>トークンの取得に成功しました</h1>
+      <p>リフレッシュトークンを安全な場所に保存してください</p>
+    </div>
+
+    <div class="warning">
+      <strong>セキュリティに関する注意:</strong>
+      リフレッシュトークンはYouTubeアカウントへの永続的なアクセス権を持ちます。
+      絶対に他人に共有したり、公開のリポジトリにコミットしないでください。
+    </div>
+
+    <div class="card">
+      <div class="token-section">
+        <div class="token-label">リフレッシュトークン</div>
+        <div class="token-box highlight">
+          <div class="token-value" id="refresh-token">{{ refresh_token }}</div>
+          <button class="copy-btn" onclick="copyText('refresh-token', this)">コピー</button>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="token-section">
+        <div class="token-label">アクセストークン（一時的）</div>
+        <div class="token-box dim">
+          <div class="token-value" id="access-token">{{ access_token }}</div>
+          <button class="copy-btn" onclick="copyText('access-token', this)">コピー</button>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="token-section">
+        <div class="token-label">認証されたスコープ</div>
+        {% for s in scope.split(' ') %}
+          {% if s %}
+          <span class="scope-tag">{{ s.split('/')[-1] }}</span>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="token-label" style="margin-bottom:12px;">credentials.json 形式</div>
+      <div class="json-block" id="json-block">{
+  "client_id": "{{ client_id }}",
+  "client_secret": "{{ client_secret }}",
+  "refresh_token": "{{ refresh_token }}",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "scopes": {{ scope.split(' ') | tojson }}
+}</div>
+      <button
+        class="copy-btn"
+        style="position:relative; top:0; right:0; margin-top:10px; width:100%; display:block; text-align:center;"
+        onclick="copyText('json-block', this)"
+      >JSON をコピー</button>
+    </div>
+
+    <a href="/" class="back-btn">別のアカウントでトークンを生成する</a>
+  </div>
+
+  <script>
+    function copyText(elementId, btn) {
+      const text = document.getElementById(elementId).textContent.trim();
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.textContent;
+        btn.textContent = 'コピー完了!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        const range = document.createRange();
+        range.selectNode(document.getElementById(elementId));
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+        btn.textContent = 'コピー完了!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'コピー';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
