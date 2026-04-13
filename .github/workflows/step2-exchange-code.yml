@@ -1,8 +1,12 @@
-name: YouTube OAuth Token Generator
+name: "[Step 2] コードをトークンに交換"
 
 on:
   workflow_dispatch:
     inputs:
+      auth_code:
+        description: "認証後のリダイレクト先URL（http://localhost/?code=... ごと貼り付けてOK）"
+        required: true
+        type: string
       client_id:
         description: "OAuth クライアント ID（空の場合は YOUTUBE_CLIENT_ID シークレットを使用）"
         required: false
@@ -13,10 +17,9 @@ on:
         type: string
 
 jobs:
-  generate-token:
+  exchange-code:
     name: リフレッシュトークンを取得
     runs-on: ubuntu-latest
-    # トークンを出力変数として公開
     outputs:
       refresh_token: ${{ steps.get-token.outputs.refresh_token }}
 
@@ -36,18 +39,19 @@ jobs:
       - name: リフレッシュトークンを取得
         id: get-token
         env:
-          # inputs が空の場合は Secrets にフォールバック
           YOUTUBE_CLIENT_ID: ${{ inputs.client_id || secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ inputs.client_secret || secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_AUTH_CODE: ${{ inputs.auth_code }}
         run: python get_token.py
 
-      - name: 取得結果を表示
+      - name: 取得結果の案内
         if: success()
         run: |
-          echo "================================================"
-          echo "  取得完了!"
-          echo "  リフレッシュトークンはステップのログを確認してください。"
+          echo "========================================================"
+          echo "  取得完了! 上のログの REFRESH_TOKEN= の値をコピーしてください。"
+          echo ""
           echo "  GitHub Secrets に保存する場合:"
-          echo "    Settings → Secrets → New repository secret"
+          echo "    Settings → Secrets and variables → Actions"
+          echo "    → New repository secret"
           echo "    Name: YOUTUBE_REFRESH_TOKEN"
-          echo "================================================"
+          echo "========================================================"
