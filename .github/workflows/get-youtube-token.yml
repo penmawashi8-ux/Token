@@ -1,0 +1,60 @@
+name: YouTube OAuth Token Generator
+
+on:
+  workflow_dispatch:
+    inputs:
+      client_id:
+        description: "OAuth クライアント ID（空の場合は YOUTUBE_CLIENT_ID シークレットを使用）"
+        required: false
+        type: string
+      client_secret:
+        description: "OAuth クライアント シークレット（空の場合は YOUTUBE_CLIENT_SECRET シークレットを使用）"
+        required: false
+        type: string
+      scopes:
+        description: "スコープ（スペース区切り）"
+        required: false
+        default: "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.force-ssl"
+        type: string
+
+jobs:
+  generate-token:
+    name: リフレッシュトークンを取得
+    runs-on: ubuntu-latest
+    # トークンを出力変数として公開
+    outputs:
+      refresh_token: ${{ steps.get-token.outputs.refresh_token }}
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python をセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: 依存パッケージをインストール
+        run: pip install requests
+
+      - name: リフレッシュトークンを取得
+        id: get-token
+        env:
+          # inputs が空の場合は Secrets にフォールバック
+          YOUTUBE_CLIENT_ID: ${{ inputs.client_id || secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ inputs.client_secret || secrets.YOUTUBE_CLIENT_SECRET }}
+        run: |
+          python get_token.py \
+            --scopes ${{ inputs.scopes || 'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.force-ssl' }}
+
+      - name: 取得結果を表示
+        if: success()
+        run: |
+          echo "================================================"
+          echo "  取得完了!"
+          echo "  リフレッシュトークンはステップのログを確認してください。"
+          echo "  GitHub Secrets に保存する場合:"
+          echo "    Settings → Secrets → New repository secret"
+          echo "    Name: YOUTUBE_REFRESH_TOKEN"
+          echo "================================================"
