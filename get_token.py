@@ -21,7 +21,11 @@ import requests
 
 AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
-SCOPE = "https://www.googleapis.com/auth/youtube"
+SCOPE = " ".join([
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+])
 # ウェブアプリ・デスクトップアプリ共通で使えるリダイレクトURI
 REDIRECT_URI = "http://localhost"
 
