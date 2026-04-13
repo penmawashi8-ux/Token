@@ -1,0 +1,45 @@
+name: "[Step 1] 認証URLを生成"
+
+on:
+  workflow_dispatch:
+    inputs:
+      client_id:
+        description: "OAuth クライアント ID（空の場合は YOUTUBE_CLIENT_ID シークレットを使用）"
+        required: false
+        type: string
+
+jobs:
+  generate-url:
+    name: 認証URLを生成して表示
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python をセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: 依存パッケージをインストール
+        run: pip install requests
+
+      - name: 認証URLを生成
+        env:
+          YOUTUBE_CLIENT_ID: ${{ inputs.client_id || secrets.YOUTUBE_CLIENT_ID }}
+        run: python get_token.py
+
+      - name: 次のステップの案内
+        run: |
+          echo "========================================================"
+          echo "  上のログに表示された認証URLにブラウザでアクセスしてください。"
+          echo ""
+          echo "  認証後、ブラウザのアドレスバーに"
+          echo "  http://localhost/?code=xxxxxxxx&scope=..."
+          echo "  のようなURLが表示されます（ページは開かなくてOK）。"
+          echo ""
+          echo "  そのURLをコピーして"
+          echo "  「[Step 2] コードをトークンに交換」ワークフローを実行してください。"
+          echo "========================================================"
